@@ -1,0 +1,68 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+def comparar_muestras(muestra_teorica, muestra_datos):
+    """
+    Compara dos muestras: una teórica y otra a partir de datos.
+    """
+    
+    # Funciones de densidad
+    x = np.linspace(0, max(max(muestra_teorica), max(muestra_datos)), 1000)
+    densidad_teorica = stats.geom.pmf(x, p)  # Cambia 'p' según tu distribución
+    densidad_datos = stats.gaussian_kde(muestra_datos)
+
+    # Gráfica de funciones de densidad
+    plt.figure(figsize=(12, 8))
+    plt.plot(x, densidad_teorica, label='Densidad Teórica', color='blue')
+    plt.plot(x, densidad_datos(x), label='Densidad de Datos', color='orange')
+    plt.title('Funciones de Densidad')
+    plt.xlabel('Valor')
+    plt.ylabel('Densidad')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    # Funciones de distribución
+    F_teorica = stats.geom.cdf(x, p)
+    F_datos = np.array([np.mean(muestra_datos <= val) for val in x])
+
+    # Gráfica de funciones de distribución
+    plt.figure(figsize=(12, 8))
+    plt.plot(x, F_teorica, label='Distribución Teórica', color='blue')
+    plt.plot(x, F_datos, label='Distribución de Datos', color='orange')
+    plt.title('Funciones de Distribución')
+    plt.xlabel('Valor')
+    plt.ylabel('Probabilidad Acumulada')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    # Gráfica PP (prob-prob)
+    plt.figure(figsize=(12, 8))
+    plt.plot(F_teorica, F_datos, marker='o', linestyle='none')
+    plt.plot([0, 1], [0, 1], color='red', linestyle='--')  # Línea de referencia
+    plt.title('Gráfica PP (Probabilidad vs Probabilidad)')
+    plt.xlabel('Probabilidad Teórica')
+    plt.ylabel('Probabilidad de Datos')
+    plt.grid()
+    plt.show()
+
+    # Gráfica QQ (quantil-quantil)
+    plt.figure(figsize=(12, 8))
+    stats.probplot(muestra_datos, dist="geom", sparams=(p,), plot=plt)
+    plt.title('Gráfica QQ (Quantil vs Quantil)')
+    plt.grid()
+    plt.show()
+
+    # Distancia de Kolmogorov-Smirnov
+    ks_statistic, ks_p_value = stats.ks_2samp(muestra_teorica, muestra_datos)
+    print(f'Distancia KS: {ks_statistic}, p-valor: {ks_p_value}')
+
+# Ejemplo
+p = 0.3  # Probabilidad de éxito
+N = 1000  # Número de lanzamientos
+muestra_teorica = np.random.geometric(p, N)
+muestra_datos = np.random.geometric(0.4, N) 
+
+comparar_muestras(muestra_teorica, muestra_datos)
