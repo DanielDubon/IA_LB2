@@ -6,6 +6,8 @@ import re
 import math
 from scipy import stats
 
+# !Tienes que estar en la carpeta EJER_3 para que funcione correctamente!
+
 # -------------------------------
 # Paso 1: Cargar el CSV y seleccionar la columna de área
 # -------------------------------
